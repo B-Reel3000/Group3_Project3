@@ -596,11 +596,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd7492f5e572ef64d867f7d71882efcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveSpeed: 10
-  horizontalLimit: 8
+  moveSpeed: 25
+  horizontalLimit: 45
   bulletPrefab: {fileID: 4964573002087560226, guid: 03f81380d900b864c8cf3753827f957c, type: 3}
   firePoint: {fileID: 1744990576}
   fireRate: 0.15
+  anim: {fileID: 93700397}
 --- !u!4 &1257195734
 Transform:
   m_ObjectHideFlags: 0
@@ -818,6 +819,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -8144540071203018743, guid: 7646f6a1b66334b418f6487c05501e2e, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f7a91bdd8340e574590e0906416011a7, type: 2}
     - target: {fileID: 919132149155446097, guid: 7646f6a1b66334b418f6487c05501e2e, type: 3}
       propertyPath: m_Name
       value: SF-47_Viper_Model
