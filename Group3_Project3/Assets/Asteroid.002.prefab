@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13f67dd44aba8db4cbcdd6d5e4ed77e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Asteroid
-  moveSpeed: 20
+  moveSpeed: 25
   lifeTime: 45
   rotateSpeed: 150
 --- !u!54 &-1407752000217512650

@@ -398,6 +398,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8307744208041139392, guid: 80bb3cf6fa470654eb020efe582e5e2c, type: 3}
+      propertyPath: spawnRate
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8307744208041139392, guid: 80bb3cf6fa470654eb020efe582e5e2c, type: 3}
       propertyPath: xSpawnRange
       value: 45
       objectReference: {fileID: 0}
