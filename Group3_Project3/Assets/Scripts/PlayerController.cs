@@ -8,10 +8,18 @@ public class PlayerController : MonoBehaviour
     public float moveSpeed = 10f;
     public float horizontalLimit = 8f;
 
-    [Header("Shooting")]
+    [Header("Normal Shooting")]
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float fireRate = 0.15f;
+
+    [Header("Laser")]
+    public GameObject laserBeam;
+    public float laserAmmo = 0f;
+    public float maxLaserAmmo = 100f;
+    public float laserDrainRate = 25f;
+    public KeyCode laserKey = KeyCode.LeftShift;
+    public Slider laserAmmoSlider;
 
     [Header("Animation")]
     public Animator anim;
@@ -38,6 +46,12 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         UpdateLivesUI();
+        UpdateLaserUI();
+
+        if (laserBeam != null)
+        {
+            laserBeam.SetActive(false);
+        }
     }
 
     void Update()
@@ -51,6 +65,7 @@ public class PlayerController : MonoBehaviour
             anim.SetFloat("moveInput", moveInput);
         }
 
+        HandleLaser();
         HandleShooting();
     }
 
@@ -65,6 +80,8 @@ public class PlayerController : MonoBehaviour
 
     void HandleShooting()
     {
+        if (IsUsingLaser()) return;
+
         fireTimer -= Time.deltaTime;
 
         if (Input.GetButton("Fire1") && fireTimer <= 0f)
@@ -72,6 +89,40 @@ public class PlayerController : MonoBehaviour
             Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
             fireTimer = fireRate;
         }
+    }
+
+    void HandleLaser()
+    {
+        if (laserBeam == null) return;
+
+        if (IsUsingLaser())
+        {
+            laserBeam.SetActive(true);
+            laserAmmo -= laserDrainRate * Time.deltaTime;
+
+            if (laserAmmo < 0f)
+            {
+                laserAmmo = 0f;
+            }
+
+            UpdateLaserUI();
+        }
+        else
+        {
+            laserBeam.SetActive(false);
+        }
+    }
+
+    bool IsUsingLaser()
+    {
+        return Input.GetKey(laserKey) && laserAmmo > 0f;
+    }
+
+    public void AddLaserAmmo(float amount)
+    {
+        laserAmmo += amount;
+        laserAmmo = Mathf.Clamp(laserAmmo, 0f, maxLaserAmmo);
+        UpdateLaserUI();
     }
 
     public void TakeDamage()
@@ -117,6 +168,11 @@ public class PlayerController : MonoBehaviour
         {
             anim.SetFloat("moveInput", 0f);
         }
+
+        if (laserBeam != null)
+        {
+            laserBeam.SetActive(false);
+        }
     }
 
     void UpdateLivesUI()
@@ -127,6 +183,15 @@ public class PlayerController : MonoBehaviour
             {
                 lifeIcons[i].enabled = i < lives;
             }
+        }
+    }
+
+    void UpdateLaserUI()
+    {
+        if (laserAmmoSlider != null)
+        {
+            laserAmmoSlider.maxValue = maxLaserAmmo;
+            laserAmmoSlider.value = laserAmmo;
         }
     }
 }

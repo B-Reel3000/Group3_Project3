@@ -7,6 +7,7 @@ public class LevelManager : MonoBehaviour
     [Header("Level Settings")]
     public float levelTime = 60f;
     public AsteroidSpawner asteroidSpawner;
+    public PowerUpSpawner powerUpSpawner;
     public PlayerController player;
 
     [Header("Travel UI")]
@@ -75,6 +76,11 @@ public class LevelManager : MonoBehaviour
             asteroidSpawner.enabled = false;
         }
 
+        if (powerUpSpawner != null)
+        {
+            powerUpSpawner.enabled = false;
+        }
+
         if (player != null)
         {
             player.DisableControl();
@@ -99,6 +105,11 @@ public class LevelManager : MonoBehaviour
             asteroidSpawner.enabled = false;
         }
 
+        if (powerUpSpawner != null)
+        {
+            powerUpSpawner.enabled = false;
+        }
+
         if (player != null)
         {
             player.DisableControl();
@@ -117,7 +128,7 @@ public class LevelManager : MonoBehaviour
 
     public void LoadMainMenu()
     {
-        SceneManager.LoadScene("Main_Menu");
+        SceneManager.LoadScene("MainMenu");
     }
 
     public void QuitGame()
