@@ -41,6 +41,7 @@ public class PlayerController : MonoBehaviour
     private float fireTimer;
     private bool isInvincible = false;
     private bool canControl = true;
+    private bool laserSoundPlaying = false;
 
     void Start()
     {
@@ -88,6 +89,11 @@ public class PlayerController : MonoBehaviour
         {
             Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
             fireTimer = fireRate;
+
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(AudioManager.instance.shootSFX);
+            }
         }
     }
 
@@ -100,6 +106,16 @@ public class PlayerController : MonoBehaviour
             laserBeam.SetActive(true);
             laserAmmo -= laserDrainRate * Time.deltaTime;
 
+            if (!laserSoundPlaying)
+            {
+                if (AudioManager.instance != null)
+                {
+                    AudioManager.instance.PlaySFX(AudioManager.instance.laserSFX);
+                }
+
+                laserSoundPlaying = true;
+            }
+
             if (laserAmmo < 0f)
             {
                 laserAmmo = 0f;
@@ -110,6 +126,7 @@ public class PlayerController : MonoBehaviour
         else
         {
             laserBeam.SetActive(false);
+            laserSoundPlaying = false;
         }
     }
 
@@ -133,6 +150,11 @@ public class PlayerController : MonoBehaviour
         UpdateLivesUI();
 
         Debug.Log("Player hit! Lives: " + lives);
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.hitSFX);
+        }
 
         if (anim != null)
         {
@@ -173,6 +195,8 @@ public class PlayerController : MonoBehaviour
         {
             laserBeam.SetActive(false);
         }
+
+        laserSoundPlaying = false;
     }
 
     void UpdateLivesUI()
