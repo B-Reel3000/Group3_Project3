@@ -1,11 +1,11 @@
 using UnityEngine;
 
-public class Asteroid : MonoBehaviour
+public class ScrapPickup : MonoBehaviour
 {
+    public int scoreValue = 25;
     public float moveSpeed = 8f;
-    public float lifeTime = 10f;
     public float rotateSpeed = 100f;
-    public int scoreValue = 10;
+    public float lifeTime = 10f;
 
     void Start()
     {
@@ -22,24 +22,12 @@ public class Asteroid : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            PlayerController player = other.GetComponent<PlayerController>();
-
-            if (player != null)
+            if (GameDataManager.instance != null)
             {
-                player.TakeDamage();
+                GameDataManager.instance.AddScore(scoreValue);
             }
 
             Destroy(gameObject);
         }
-    }
-
-    public void DestroyByLaser()
-    {
-        if (GameDataManager.instance != null)
-        {
-            GameDataManager.instance.AddScore(scoreValue);
-        }
-
-        Destroy(gameObject);
     }
 }

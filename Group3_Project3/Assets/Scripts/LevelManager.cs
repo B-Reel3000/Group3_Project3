@@ -8,6 +8,7 @@ public class LevelManager : MonoBehaviour
     public float levelTime = 60f;
     public AsteroidSpawner asteroidSpawner;
     public PowerUpSpawner powerUpSpawner;
+    public ScrapSpawner scrapSpawner;
     public PlayerController player;
 
     [Header("Travel UI")]
@@ -81,6 +82,11 @@ public class LevelManager : MonoBehaviour
             powerUpSpawner.enabled = false;
         }
 
+        if (scrapSpawner != null)
+        {
+            scrapSpawner.enabled = false;
+        }
+
         if (player != null)
         {
             player.DisableControl();
@@ -110,6 +116,11 @@ public class LevelManager : MonoBehaviour
             powerUpSpawner.enabled = false;
         }
 
+        if (scrapSpawner != null)
+        {
+            scrapSpawner.enabled = false;
+        }
+
         if (player != null)
         {
             player.DisableControl();
@@ -123,11 +134,13 @@ public class LevelManager : MonoBehaviour
 
     public void RestartLevel()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void LoadMainMenu()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
     }
 

@@ -7,6 +7,8 @@ public class PlayerController : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 10f;
     public float horizontalLimit = 8f;
+    public float verticalLimitMin = -3f;
+    public float verticalLimitMax = 3f;
 
     [Header("Normal Shooting")]
     public GameObject bulletPrefab;
@@ -37,15 +39,25 @@ public class PlayerController : MonoBehaviour
     public LevelManager levelManager;
 
     private Rigidbody rb;
-    private float moveInput;
+    private float moveInputX;
+    private float moveInputZ;
     private float fireTimer;
     private bool isInvincible = false;
     private bool canControl = true;
     private bool laserSoundPlaying = false;
+    private int shieldHits = 0;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        if (GameDataManager.instance != null)
+        {
+            moveSpeed = GameDataManager.instance.GetMoveSpeed();
+            lives = GameDataManager.instance.GetMaxLives();
+            shieldHits = GameDataManager.instance.GetShieldHits();
+        }
+
         UpdateLivesUI();
         UpdateLaserUI();
 
@@ -59,11 +71,12 @@ public class PlayerController : MonoBehaviour
     {
         if (!canControl) return;
 
-        moveInput = Input.GetAxisRaw("Horizontal");
+        moveInputX = Input.GetAxisRaw("Horizontal");
+        moveInputZ = Input.GetAxisRaw("Vertical");
 
         if (anim != null)
         {
-            anim.SetFloat("moveInput", moveInput);
+            anim.SetFloat("moveInput", moveInputX);
         }
 
         HandleLaser();
@@ -74,8 +87,12 @@ public class PlayerController : MonoBehaviour
     {
         if (!canControl) return;
 
-        Vector3 newPos = rb.position + Vector3.right * moveInput * moveSpeed * Time.fixedDeltaTime;
+        Vector3 moveDirection = new Vector3(moveInputX, 0f, moveInputZ).normalized;
+        Vector3 newPos = rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime;
+
         newPos.x = Mathf.Clamp(newPos.x, -horizontalLimit, horizontalLimit);
+        newPos.z = Mathf.Clamp(newPos.z, verticalLimitMin, verticalLimitMax);
+
         rb.MovePosition(newPos);
     }
 
@@ -145,6 +162,25 @@ public class PlayerController : MonoBehaviour
     public void TakeDamage()
     {
         if (isInvincible) return;
+
+        if (shieldHits > 0)
+        {
+            shieldHits--;
+            Debug.Log("Shield hit! Remaining shield: " + shieldHits);
+
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(AudioManager.instance.hitSFX);
+            }
+
+            if (anim != null)
+            {
+                anim.SetTrigger("TakeHit");
+            }
+
+            StartCoroutine(Invincibility());
+            return;
+        }
 
         lives--;
         UpdateLivesUI();

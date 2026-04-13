@@ -6,7 +6,16 @@ public class LaserBeam : MonoBehaviour
     {
         if (other.CompareTag("Asteroid"))
         {
-            Destroy(other.gameObject);
+            Asteroid asteroid = other.GetComponent<Asteroid>();
+
+            if (asteroid != null)
+            {
+                asteroid.DestroyByLaser();
+            }
+            else
+            {
+                Destroy(other.gameObject);
+            }
         }
 
         if (other.CompareTag("Enemy"))
