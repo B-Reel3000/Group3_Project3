@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class LevelManager : MonoBehaviour
 {
@@ -15,9 +16,14 @@ public class LevelManager : MonoBehaviour
     [Header("Travel UI")]
     public Slider travelSlider;
 
-    [Header("End UI")]
+    [Header("Scene Flow")]
+    public string nextSceneName = "Shop";
+    public string startLevelText = "Level One";
+    public string endLevelText = "Destination Reached";
+
+    [Header("UI")]
+    public LevelTextUI levelTextUI;
     public GameObject gameOverPanel;
-    public GameObject levelCompletePanel;
 
     private float timer;
     private bool levelEnded = false;
@@ -44,9 +50,16 @@ public class LevelManager : MonoBehaviour
             gameOverPanel.SetActive(false);
         }
 
-        if (levelCompletePanel != null)
+        StartCoroutine(ShowStartText());
+    }
+
+    IEnumerator ShowStartText()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        if (levelTextUI != null)
         {
-            levelCompletePanel.SetActive(false);
+            levelTextUI.ShowMessage(startLevelText);
         }
     }
 
@@ -77,19 +90,27 @@ public class LevelManager : MonoBehaviour
             travelSlider.value = 1f;
         }
 
-        if (asteroidSpawner != null) asteroidSpawner.enabled = false;
-        if (powerUpSpawner != null) powerUpSpawner.enabled = false;
-        if (scrapSpawner != null) scrapSpawner.enabled = false;
-        if (enemySpawner != null) enemySpawner.enabled = false;
+        StopGameplay();
 
-        if (player != null)
+        StartCoroutine(WinSequence());
+    }
+
+    IEnumerator WinSequence()
+    {
+        if (levelTextUI != null)
         {
-            player.DisableControl();
+            levelTextUI.ShowMessage(endLevelText);
         }
 
-        if (levelCompletePanel != null)
+        yield return new WaitForSeconds(2.5f);
+
+        if (FadeManager.instance != null)
         {
-            levelCompletePanel.SetActive(true);
+            FadeManager.instance.LoadSceneWithFade(nextSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(nextSceneName);
         }
     }
 
@@ -98,7 +119,16 @@ public class LevelManager : MonoBehaviour
         if (levelEnded) return;
 
         levelEnded = true;
+        StopGameplay();
 
+        if (gameOverPanel != null)
+        {
+            gameOverPanel.SetActive(true);
+        }
+    }
+
+    void StopGameplay()
+    {
         if (asteroidSpawner != null) asteroidSpawner.enabled = false;
         if (powerUpSpawner != null) powerUpSpawner.enabled = false;
         if (scrapSpawner != null) scrapSpawner.enabled = false;
@@ -108,27 +138,5 @@ public class LevelManager : MonoBehaviour
         {
             player.DisableControl();
         }
-
-        if (gameOverPanel != null)
-        {
-            gameOverPanel.SetActive(true);
-        }
-    }
-
-    public void RestartLevel()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-    }
-
-    public void LoadMainMenu()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
-    }
-
-    public void QuitGame()
-    {
-        Application.Quit();
     }
 }

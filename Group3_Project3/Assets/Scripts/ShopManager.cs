@@ -1,11 +1,13 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Collections;
 
 public class ShopManager : MonoBehaviour
 {
     [Header("UI")]
     public TMP_Text scoreText;
+    public TMP_Text infoText;
 
     [Header("Costs")]
     public int maxLivesCost = 100;
@@ -14,14 +16,17 @@ public class ShopManager : MonoBehaviour
     public int spreadCost = 200;
 
     [Header("Next Scene")]
-    public string nextLevelSceneName = "Level2";
+    public string nextLevelSceneName = "Level2Cinematic";
 
-    void Update()
+    void Start()
     {
-        UpdateUI();
+        if (infoText != null)
+        {
+            infoText.text = "";
+        }
     }
 
-    void UpdateUI()
+    void Update()
     {
         if (scoreText != null && GameDataManager.instance != null)
         {
@@ -29,24 +34,26 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    // ---------- PURCHASE METHODS ----------
+
     public void BuyMaxLivesUpgrade()
     {
         if (GameDataManager.instance == null) return;
 
         if (!GameDataManager.instance.CanBuyMaxLives())
         {
-            Debug.Log("Max Lives is already at max.");
+            ShowInfo("Max lives already upgraded");
             return;
         }
 
         if (GameDataManager.instance.SpendScore(maxLivesCost))
         {
             GameDataManager.instance.maxLivesPurchases++;
-            Debug.Log("Bought Max Lives upgrade.");
+            ShowInfo("Max lives increased!");
         }
         else
         {
-            Debug.Log("Not enough score for Max Lives.");
+            ShowInfo("Not enough score");
         }
     }
 
@@ -56,18 +63,18 @@ public class ShopManager : MonoBehaviour
 
         if (GameDataManager.instance.hasShieldUpgrade)
         {
-            Debug.Log("Shield already purchased.");
+            ShowInfo("Shield already purchased");
             return;
         }
 
         if (GameDataManager.instance.SpendScore(shieldCost))
         {
             GameDataManager.instance.hasShieldUpgrade = true;
-            Debug.Log("Bought Shield upgrade.");
+            ShowInfo("Shield acquired!");
         }
         else
         {
-            Debug.Log("Not enough score for Shield.");
+            ShowInfo("Not enough score");
         }
     }
 
@@ -77,18 +84,18 @@ public class ShopManager : MonoBehaviour
 
         if (GameDataManager.instance.hasSpeedUpgrade)
         {
-            Debug.Log("Speed already purchased.");
+            ShowInfo("Speed already upgraded");
             return;
         }
 
         if (GameDataManager.instance.SpendScore(speedCost))
         {
             GameDataManager.instance.hasSpeedUpgrade = true;
-            Debug.Log("Bought Speed upgrade.");
+            ShowInfo("Speed increased!");
         }
         else
         {
-            Debug.Log("Not enough score for Speed.");
+            ShowInfo("Not enough score");
         }
     }
 
@@ -98,28 +105,63 @@ public class ShopManager : MonoBehaviour
 
         if (GameDataManager.instance.hasSpreadUpgrade)
         {
-            Debug.Log("Spread already purchased.");
+            ShowInfo("Spread already purchased");
             return;
         }
 
         if (GameDataManager.instance.SpendScore(spreadCost))
         {
             GameDataManager.instance.hasSpreadUpgrade = true;
-            Debug.Log("Bought Spread upgrade.");
+            ShowInfo("Spread shot unlocked!");
         }
         else
         {
-            Debug.Log("Not enough score for Spread.");
+            ShowInfo("Not enough score");
         }
     }
 
+    // ---------- SCENE TRANSITIONS ----------
+
     public void ContinueToNextLevel()
     {
-        SceneManager.LoadScene(nextLevelSceneName);
+        if (FadeManager.instance != null)
+        {
+            FadeManager.instance.LoadSceneWithFade(nextLevelSceneName);
+        }
+        else
+        {
+            SceneManager.LoadScene(nextLevelSceneName);
+        }
     }
 
     public void ReturnToMainMenu()
     {
-        SceneManager.LoadScene("MainMenu");
+        if (FadeManager.instance != null)
+        {
+            FadeManager.instance.LoadSceneWithFade("MainMenu");
+        }
+        else
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
+    }
+
+    // ---------- INFO TEXT ----------
+
+    void ShowInfo(string message)
+    {
+        if (infoText == null) return;
+
+        StopAllCoroutines();
+        StartCoroutine(ShowInfoRoutine(message));
+    }
+
+    IEnumerator ShowInfoRoutine(string message)
+    {
+        infoText.text = message;
+
+        yield return new WaitForSeconds(2f);
+
+        infoText.text = "";
     }
 }
