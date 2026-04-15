@@ -9,6 +9,7 @@ public class LevelManager : MonoBehaviour
     public AsteroidSpawner asteroidSpawner;
     public PowerUpSpawner powerUpSpawner;
     public ScrapSpawner scrapSpawner;
+    public EnemySpawner enemySpawner;
     public PlayerController player;
 
     [Header("Travel UI")]
@@ -20,10 +21,16 @@ public class LevelManager : MonoBehaviour
 
     private float timer;
     private bool levelEnded = false;
+    private float travelSpeedMultiplier = 1f;
 
     void Start()
     {
         timer = 0f;
+
+        if (GameDataManager.instance != null)
+        {
+            travelSpeedMultiplier = GameDataManager.instance.GetTravelSpeedMultiplier();
+        }
 
         if (travelSlider != null)
         {
@@ -47,7 +54,7 @@ public class LevelManager : MonoBehaviour
     {
         if (levelEnded) return;
 
-        timer += Time.deltaTime;
+        timer += Time.deltaTime * travelSpeedMultiplier;
 
         if (travelSlider != null)
         {
@@ -70,22 +77,10 @@ public class LevelManager : MonoBehaviour
             travelSlider.value = 1f;
         }
 
-        Debug.Log("Level Complete!");
-
-        if (asteroidSpawner != null)
-        {
-            asteroidSpawner.enabled = false;
-        }
-
-        if (powerUpSpawner != null)
-        {
-            powerUpSpawner.enabled = false;
-        }
-
-        if (scrapSpawner != null)
-        {
-            scrapSpawner.enabled = false;
-        }
+        if (asteroidSpawner != null) asteroidSpawner.enabled = false;
+        if (powerUpSpawner != null) powerUpSpawner.enabled = false;
+        if (scrapSpawner != null) scrapSpawner.enabled = false;
+        if (enemySpawner != null) enemySpawner.enabled = false;
 
         if (player != null)
         {
@@ -104,22 +99,10 @@ public class LevelManager : MonoBehaviour
 
         levelEnded = true;
 
-        Debug.Log("Game Over");
-
-        if (asteroidSpawner != null)
-        {
-            asteroidSpawner.enabled = false;
-        }
-
-        if (powerUpSpawner != null)
-        {
-            powerUpSpawner.enabled = false;
-        }
-
-        if (scrapSpawner != null)
-        {
-            scrapSpawner.enabled = false;
-        }
+        if (asteroidSpawner != null) asteroidSpawner.enabled = false;
+        if (powerUpSpawner != null) powerUpSpawner.enabled = false;
+        if (scrapSpawner != null) scrapSpawner.enabled = false;
+        if (enemySpawner != null) enemySpawner.enabled = false;
 
         if (player != null)
         {
@@ -146,7 +129,6 @@ public class LevelManager : MonoBehaviour
 
     public void QuitGame()
     {
-        Debug.Log("Quit Game");
         Application.Quit();
     }
 }

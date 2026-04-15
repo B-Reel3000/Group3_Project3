@@ -7,14 +7,21 @@ public class Asteroid : MonoBehaviour
     public float rotateSpeed = 100f;
     public int scoreValue = 10;
 
+    private float speedMultiplier = 1f;
+
     void Start()
     {
         Destroy(gameObject, lifeTime);
+
+        if (GameDataManager.instance != null)
+        {
+            speedMultiplier = GameDataManager.instance.GetTravelSpeedMultiplier();
+        }
     }
 
     void Update()
     {
-        transform.position += Vector3.back * moveSpeed * Time.deltaTime;
+        transform.position += Vector3.back * moveSpeed * speedMultiplier * Time.deltaTime;
         transform.Rotate(Vector3.up * rotateSpeed * Time.deltaTime);
     }
 

@@ -15,12 +15,17 @@ public class PlayerController : MonoBehaviour
     public Transform firePoint;
     public float fireRate = 0.15f;
 
+    [Header("Spread Shot")]
+    public bool hasSpreadShot = false;
+    public int spreadBulletCount = 3;
+    public float spreadAngle = 20f;
+
     [Header("Laser")]
     public GameObject laserBeam;
     public float laserAmmo = 0f;
     public float maxLaserAmmo = 100f;
     public float laserDrainRate = 25f;
-    public KeyCode laserKey = KeyCode.LeftShift;
+    public KeyCode laserKey = KeyCode.Space;
     public Slider laserAmmoSlider;
 
     [Header("Animation")]
@@ -53,9 +58,11 @@ public class PlayerController : MonoBehaviour
 
         if (GameDataManager.instance != null)
         {
-            moveSpeed = GameDataManager.instance.GetMoveSpeed();
             lives = GameDataManager.instance.GetMaxLives();
             shieldHits = GameDataManager.instance.GetShieldHits();
+
+            hasSpreadShot = GameDataManager.instance.hasSpreadUpgrade;
+            spreadBulletCount = GameDataManager.instance.GetSpreadBulletCount();
         }
 
         UpdateLivesUI();
@@ -87,8 +94,10 @@ public class PlayerController : MonoBehaviour
     {
         if (!canControl) return;
 
-        Vector3 moveDirection = new Vector3(moveInputX, 0f, moveInputZ).normalized;
-        Vector3 newPos = rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime;
+        Vector3 newPos = rb.position;
+
+        newPos.x += moveInputX * moveSpeed * Time.fixedDeltaTime;
+        newPos.z += moveInputZ * moveSpeed * Time.fixedDeltaTime;
 
         newPos.x = Mathf.Clamp(newPos.x, -horizontalLimit, horizontalLimit);
         newPos.z = Mathf.Clamp(newPos.z, verticalLimitMin, verticalLimitMax);
@@ -104,13 +113,48 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButton("Fire1") && fireTimer <= 0f)
         {
-            Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+            if (hasSpreadShot)
+            {
+                FireSpreadShot();
+            }
+            else
+            {
+                FireSingleShot();
+            }
+
             fireTimer = fireRate;
 
             if (AudioManager.instance != null)
             {
                 AudioManager.instance.PlaySFX(AudioManager.instance.shootSFX);
             }
+        }
+    }
+
+    void FireSingleShot()
+    {
+        if (bulletPrefab == null || firePoint == null) return;
+
+        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+    }
+
+    void FireSpreadShot()
+    {
+        if (bulletPrefab == null || firePoint == null) return;
+
+        int bulletCount = Mathf.Max(3, spreadBulletCount);
+
+        float startAngle = -spreadAngle * 0.5f;
+        float angleStep = spreadAngle / (bulletCount - 1);
+
+        for (int i = 0; i < bulletCount; i++)
+        {
+            float currentAngle = startAngle + (angleStep * i);
+
+            Quaternion bulletRotation =
+                firePoint.rotation * Quaternion.Euler(0f, currentAngle, 0f);
+
+            Instantiate(bulletPrefab, firePoint.position, bulletRotation);
         }
     }
 
@@ -166,7 +210,6 @@ public class PlayerController : MonoBehaviour
         if (shieldHits > 0)
         {
             shieldHits--;
-            Debug.Log("Shield hit! Remaining shield: " + shieldHits);
 
             if (AudioManager.instance != null)
             {
@@ -184,8 +227,6 @@ public class PlayerController : MonoBehaviour
 
         lives--;
         UpdateLivesUI();
-
-        Debug.Log("Player hit! Lives: " + lives);
 
         if (AudioManager.instance != null)
         {
@@ -220,7 +261,6 @@ public class PlayerController : MonoBehaviour
     public void DisableControl()
     {
         canControl = false;
-        rb.linearVelocity = Vector3.zero;
 
         if (anim != null)
         {

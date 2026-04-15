@@ -1,32 +1,20 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
-using System.Collections;
 
 public class ShopManager : MonoBehaviour
 {
     [Header("UI")]
     public TMP_Text scoreText;
-    public TMP_Text infoText;
 
-    [Header("Upgrade Costs")]
+    [Header("Costs")]
     public int maxLivesCost = 100;
     public int shieldCost = 150;
-    public int speedCost = 125;
+    public int speedCost = 150;
     public int spreadCost = 200;
 
     [Header("Next Scene")]
     public string nextLevelSceneName = "Level2";
-
-    void Start()
-    {
-        if (infoText != null)
-        {
-            infoText.text = "";
-        }
-
-        UpdateUI();
-    }
 
     void Update()
     {
@@ -41,55 +29,87 @@ public class ShopManager : MonoBehaviour
         }
     }
 
-    public void BuyMaxLives()
+    public void BuyMaxLivesUpgrade()
     {
-        if (GameDataManager.instance != null && GameDataManager.instance.SpendScore(maxLivesCost))
+        if (GameDataManager.instance == null) return;
+
+        if (!GameDataManager.instance.CanBuyMaxLives())
         {
-            GameDataManager.instance.maxLivesLevel++;
-            ShowMessage("Max Lives upgraded!");
+            Debug.Log("Max Lives is already at max.");
+            return;
+        }
+
+        if (GameDataManager.instance.SpendScore(maxLivesCost))
+        {
+            GameDataManager.instance.maxLivesPurchases++;
+            Debug.Log("Bought Max Lives upgrade.");
         }
         else
         {
-            ShowMessage("Not enough score!");
+            Debug.Log("Not enough score for Max Lives.");
         }
     }
 
-    public void BuyShield()
+    public void BuyShieldUpgrade()
     {
-        if (GameDataManager.instance != null && GameDataManager.instance.SpendScore(shieldCost))
+        if (GameDataManager.instance == null) return;
+
+        if (GameDataManager.instance.hasShieldUpgrade)
         {
-            GameDataManager.instance.shieldLevel++;
-            ShowMessage("Shield upgraded!");
+            Debug.Log("Shield already purchased.");
+            return;
+        }
+
+        if (GameDataManager.instance.SpendScore(shieldCost))
+        {
+            GameDataManager.instance.hasShieldUpgrade = true;
+            Debug.Log("Bought Shield upgrade.");
         }
         else
         {
-            ShowMessage("Not enough score!");
+            Debug.Log("Not enough score for Shield.");
         }
     }
 
-    public void BuySpeed()
+    public void BuySpeedUpgrade()
     {
-        if (GameDataManager.instance != null && GameDataManager.instance.SpendScore(speedCost))
+        if (GameDataManager.instance == null) return;
+
+        if (GameDataManager.instance.hasSpeedUpgrade)
         {
-            GameDataManager.instance.speedLevel++;
-            ShowMessage("Speed upgraded!");
+            Debug.Log("Speed already purchased.");
+            return;
+        }
+
+        if (GameDataManager.instance.SpendScore(speedCost))
+        {
+            GameDataManager.instance.hasSpeedUpgrade = true;
+            Debug.Log("Bought Speed upgrade.");
         }
         else
         {
-            ShowMessage("Not enough score!");
+            Debug.Log("Not enough score for Speed.");
         }
     }
 
-    public void BuySpread()
+    public void BuySpreadUpgrade()
     {
-        if (GameDataManager.instance != null && GameDataManager.instance.SpendScore(spreadCost))
+        if (GameDataManager.instance == null) return;
+
+        if (GameDataManager.instance.hasSpreadUpgrade)
         {
-            GameDataManager.instance.spreadLevel++;
-            ShowMessage("Spread Fire upgraded!");
+            Debug.Log("Spread already purchased.");
+            return;
+        }
+
+        if (GameDataManager.instance.SpendScore(spreadCost))
+        {
+            GameDataManager.instance.hasSpreadUpgrade = true;
+            Debug.Log("Bought Spread upgrade.");
         }
         else
         {
-            ShowMessage("Not enough score!");
+            Debug.Log("Not enough score for Spread.");
         }
     }
 
@@ -98,37 +118,8 @@ public class ShopManager : MonoBehaviour
         SceneManager.LoadScene(nextLevelSceneName);
     }
 
-    public void LoadMainMenu()
+    public void ReturnToMainMenu()
     {
         SceneManager.LoadScene("MainMenu");
-    }
-
-    void ShowMessage(string message)
-    {
-        if (infoText != null)
-        {
-            StopAllCoroutines();
-            StartCoroutine(ShowMessageRoutine(message));
-        }
-
-        Debug.Log(message);
-    }
-
-    IEnumerator ShowMessageRoutine(string message)
-    {
-        infoText.text = message;
-
-        if (message.Contains("Not enough"))
-        {
-            infoText.color = Color.red;
-        }
-        else
-        {
-            infoText.color = Color.green;
-        }
-
-        yield return new WaitForSeconds(2f);
-
-        infoText.text = "";
     }
 }

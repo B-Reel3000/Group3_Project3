@@ -7,19 +7,22 @@ public class GameDataManager : MonoBehaviour
     [Header("Score")]
     public int score = 0;
 
-    [Header("Upgrade Levels")]
-    public int maxLivesLevel = 0;
-    public int shieldLevel = 0;
-    public int speedLevel = 0;
-    public int spreadLevel = 0;
+    [Header("Lives Upgrade")]
+    public int maxLivesPurchases = 0;
+    public int maxLivesPurchaseLimit = 2;
+
+    [Header("One-Time Upgrades")]
+    public bool hasShieldUpgrade = false;
+    public bool hasSpeedUpgrade = false;
+    public bool hasSpreadUpgrade = false;
 
     [Header("Base Values")]
     public int baseLives = 3;
-    public int baseShieldHits = 5;
-    public float baseMoveSpeed = 10f;
-
-    public float baseSpreadCooldown = 5f;
+    public int shieldHitsWhenUnlocked = 5;
+    public float baseTravelSpeedMultiplier = 1f;
+    public float upgradedTravelSpeedMultiplier = 1.35f;
     public int baseSpreadBulletCount = 3;
+    public int upgradedSpreadBulletCount = 5;
 
     void Awake()
     {
@@ -37,7 +40,11 @@ public class GameDataManager : MonoBehaviour
     public void AddScore(int amount)
     {
         score += amount;
-        if (score < 0) score = 0;
+
+        if (score < 0)
+        {
+            score = 0;
+        }
     }
 
     public bool SpendScore(int amount)
@@ -47,31 +54,56 @@ public class GameDataManager : MonoBehaviour
             score -= amount;
             return true;
         }
+
         return false;
     }
 
     public int GetMaxLives()
     {
-        return baseLives + maxLivesLevel;
+        return baseLives + maxLivesPurchases;
     }
 
     public int GetShieldHits()
     {
-        return baseShieldHits + (shieldLevel * 2);
+        if (hasShieldUpgrade)
+        {
+            return shieldHitsWhenUnlocked;
+        }
+
+        return 0;
     }
 
-    public float GetMoveSpeed()
+    public float GetTravelSpeedMultiplier()
     {
-        return baseMoveSpeed + (speedLevel * 2f);
-    }
+        if (hasSpeedUpgrade)
+        {
+            return upgradedTravelSpeedMultiplier;
+        }
 
-    public float GetSpreadCooldown()
-    {
-        return Mathf.Max(1f, baseSpreadCooldown - (spreadLevel * 0.5f));
+        return baseTravelSpeedMultiplier;
     }
 
     public int GetSpreadBulletCount()
     {
-        return baseSpreadBulletCount + spreadLevel;
+        if (hasSpreadUpgrade)
+        {
+            return upgradedSpreadBulletCount;
+        }
+
+        return 1;
+    }
+
+    public bool CanBuyMaxLives()
+    {
+        return maxLivesPurchases < maxLivesPurchaseLimit;
+    }
+
+    public void ResetAllData()
+    {
+        score = 0;
+        maxLivesPurchases = 0;
+        hasShieldUpgrade = false;
+        hasSpeedUpgrade = false;
+        hasSpreadUpgrade = false;
     }
 }
