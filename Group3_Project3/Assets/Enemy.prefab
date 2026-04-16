@@ -71,8 +71,8 @@ MonoBehaviour:
   scoreValue: 50
   enemyBulletPrefab: {fileID: 5384868775602703817, guid: 14a177702f2f1284f8e655e1b23998bb, type: 3}
   firePoint: {fileID: 194100926857435206}
-  fireRate: 5
-  enterSpeed: 8
+  fireRate: 3
+  enterSpeed: 20
   strafeSpeed: 3
   strafeRange: 8
   explosionPrefab: {fileID: 5481530993414605263, guid: 7a12b40fb78f3694ea3ba5830db032b4, type: 3}
