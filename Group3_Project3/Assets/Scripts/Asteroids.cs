@@ -2,10 +2,16 @@ using UnityEngine;
 
 public class Asteroid : MonoBehaviour
 {
+    [Header("Movement")]
     public float moveSpeed = 8f;
     public float lifeTime = 10f;
     public float rotateSpeed = 100f;
+
+    [Header("Score")]
     public int scoreValue = 10;
+
+    [Header("Effects")]
+    public GameObject explosionPrefab;
 
     private float speedMultiplier = 1f;
 
@@ -36,6 +42,7 @@ public class Asteroid : MonoBehaviour
                 player.TakeDamage();
             }
 
+            Explode();
             Destroy(gameObject);
         }
     }
@@ -47,6 +54,15 @@ public class Asteroid : MonoBehaviour
             GameDataManager.instance.AddScore(scoreValue);
         }
 
+        Explode();
         Destroy(gameObject);
+    }
+
+    void Explode()
+    {
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
     }
 }

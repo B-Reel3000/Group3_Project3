@@ -108,6 +108,8 @@ MonoBehaviour:
   moveSpeed: 25
   lifeTime: 45
   rotateSpeed: 150
+  scoreValue: 10
+  explosionPrefab: {fileID: 5481530993414605263, guid: 7a12b40fb78f3694ea3ba5830db032b4, type: 3}
 --- !u!54 &2341738505712461272
 Rigidbody:
   m_ObjectHideFlags: 0

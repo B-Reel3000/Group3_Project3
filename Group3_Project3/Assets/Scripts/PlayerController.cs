@@ -25,7 +25,6 @@ public class PlayerController : MonoBehaviour
     public float laserAmmo = 0f;
     public float maxLaserAmmo = 100f;
     public float laserDrainRate = 25f;
-    public KeyCode laserKey = KeyCode.Space;
     public Slider laserAmmoSlider;
 
     [Header("Animation")]
@@ -42,6 +41,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("Level Manager")]
     public LevelManager levelManager;
+
+    [Header("Effects")]
+    public GameObject explosionPrefab;
 
     private Rigidbody rb;
     private float moveInputX;
@@ -191,9 +193,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 🔥 RIGHT CLICK LASER HERE
     bool IsUsingLaser()
     {
-        return Input.GetKey(laserKey) && laserAmmo > 0f;
+        return Input.GetMouseButton(1) && laserAmmo > 0f;
     }
 
     public void AddLaserAmmo(float amount)
@@ -242,12 +245,27 @@ public class PlayerController : MonoBehaviour
 
         if (lives <= 0)
         {
+            Explode();
+
             if (levelManager != null)
             {
                 levelManager.GameOver();
             }
 
             gameObject.SetActive(false);
+        }
+    }
+
+    void Explode()
+    {
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.explosionSFX);
         }
     }
 

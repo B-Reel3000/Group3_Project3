@@ -75,6 +75,7 @@ MonoBehaviour:
   enterSpeed: 8
   strafeSpeed: 3
   strafeRange: 8
+  explosionPrefab: {fileID: 5481530993414605263, guid: 7a12b40fb78f3694ea3ba5830db032b4, type: 3}
 --- !u!1 &7326406816619056184
 GameObject:
   m_ObjectHideFlags: 0

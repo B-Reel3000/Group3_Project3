@@ -8,29 +8,39 @@ public class AudioManager : MonoBehaviour
     public AudioSource musicSource;
     public AudioSource sfxSource;
 
-    [Header("Sound Effects")]
+    [Header("Player SFX")]
     public AudioClip shootSFX;
-    public AudioClip hitSFX;
     public AudioClip laserSFX;
+    public AudioClip hitSFX;
+
+    [Header("Explosion SFX")]
+    public AudioClip explosionSFX;
+
+    [Header("Enemy SFX")]
+    public AudioClip enemyShootSFX;
+
+    [Header("UI SFX")]
+    public AudioClip buttonBeepSFX;
 
     void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        instance = this;
     }
 
     public void PlaySFX(AudioClip clip)
     {
-        if (clip != null && sfxSource != null)
-        {
-            sfxSource.PlayOneShot(clip);
-        }
+        if (clip == null || sfxSource == null) return;
+
+        sfxSource.pitch = Random.Range(0.9f, 1.1f);
+        sfxSource.PlayOneShot(clip);
+        sfxSource.pitch = 1f;
+    }
+
+    public void PlayMusic(AudioClip musicClip)
+    {
+        if (musicClip == null || musicSource == null) return;
+
+        musicSource.clip = musicClip;
+        musicSource.Play();
     }
 }

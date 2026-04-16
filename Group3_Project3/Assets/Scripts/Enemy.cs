@@ -16,6 +16,9 @@ public class Enemy : MonoBehaviour
     public float strafeSpeed = 2f;
     public float strafeRange = 1.5f;
 
+    [Header("Effects")]
+    public GameObject explosionPrefab;
+
     private float fireTimer;
     private Vector3 targetPosition;
     private Vector3 combatStartPosition;
@@ -77,6 +80,11 @@ public class Enemy : MonoBehaviour
                 Instantiate(enemyBulletPrefab, firePoint.position, Quaternion.identity);
             }
 
+            if (AudioManager.instance != null)
+            {
+                AudioManager.instance.PlaySFX(AudioManager.instance.enemyShootSFX);
+            }
+
             fireTimer = fireRate;
         }
     }
@@ -93,7 +101,21 @@ public class Enemy : MonoBehaviour
                 GameDataManager.instance.AddScore(scoreValue);
             }
 
+            Explode();
             Destroy(gameObject);
+        }
+    }
+
+    void Explode()
+    {
+        if (explosionPrefab != null)
+        {
+            Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+        }
+
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.PlaySFX(AudioManager.instance.explosionSFX);
         }
     }
 }
