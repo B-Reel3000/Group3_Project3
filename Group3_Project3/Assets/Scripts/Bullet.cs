@@ -3,12 +3,12 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     public float speed = 20f;
-    public float lifetime = 3f;
+    public float lifeTime = 3f;
     public int damage = 1;
 
     void Start()
     {
-        Destroy(gameObject, lifetime);
+        Destroy(gameObject, lifeTime);
     }
 
     void Update()
@@ -29,7 +29,31 @@ public class Bullet : MonoBehaviour
 
             if (enemy != null)
             {
+                Debug.Log("Bullet hit Enemy: " + other.name);
                 enemy.TakeDamage(damage);
+            }
+
+            Destroy(gameObject);
+            return;
+        }
+
+        if (other.CompareTag("Boss"))
+        {
+            BossController boss = other.GetComponent<BossController>();
+
+            if (boss == null)
+            {
+                boss = other.GetComponentInParent<BossController>();
+            }
+
+            if (boss != null)
+            {
+                Debug.Log("Bullet hit Boss: " + other.name);
+                boss.TakeDamage(damage);
+            }
+            else
+            {
+                Debug.Log("Hit object tagged Boss, but no BossController found: " + other.name);
             }
 
             Destroy(gameObject);

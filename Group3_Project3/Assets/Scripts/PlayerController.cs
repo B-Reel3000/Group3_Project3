@@ -14,6 +14,7 @@ public class PlayerController : MonoBehaviour
     public GameObject bulletPrefab;
     public Transform firePoint;
     public float fireRate = 0.15f;
+    public float bulletSpawnOffset = 1f;
 
     [Header("Spread Shot")]
     public bool hasSpreadShot = false;
@@ -137,7 +138,8 @@ public class PlayerController : MonoBehaviour
     {
         if (bulletPrefab == null || firePoint == null) return;
 
-        Instantiate(bulletPrefab, firePoint.position, firePoint.rotation);
+        Vector3 spawnPosition = firePoint.position + firePoint.forward * bulletSpawnOffset;
+        Instantiate(bulletPrefab, spawnPosition, firePoint.rotation);
     }
 
     void FireSpreadShot()
@@ -145,18 +147,16 @@ public class PlayerController : MonoBehaviour
         if (bulletPrefab == null || firePoint == null) return;
 
         int bulletCount = Mathf.Max(3, spreadBulletCount);
-
         float startAngle = -spreadAngle * 0.5f;
         float angleStep = spreadAngle / (bulletCount - 1);
 
         for (int i = 0; i < bulletCount; i++)
         {
             float currentAngle = startAngle + (angleStep * i);
+            Quaternion bulletRotation = firePoint.rotation * Quaternion.Euler(0f, currentAngle, 0f);
+            Vector3 spawnPosition = firePoint.position + bulletRotation * Vector3.forward * bulletSpawnOffset;
 
-            Quaternion bulletRotation =
-                firePoint.rotation * Quaternion.Euler(0f, currentAngle, 0f);
-
-            Instantiate(bulletPrefab, firePoint.position, bulletRotation);
+            Instantiate(bulletPrefab, spawnPosition, bulletRotation);
         }
     }
 
@@ -193,7 +193,6 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // 🔥 RIGHT CLICK LASER HERE
     bool IsUsingLaser()
     {
         return Input.GetMouseButton(1) && laserAmmo > 0f;

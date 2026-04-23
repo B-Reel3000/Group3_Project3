@@ -27,6 +27,27 @@ EditorBuildSettings:
     path: Assets/Scenes/Level3.unity
     guid: 2006513779eb1ff4f9bc8db81976cd13
   - enabled: 1
+    path: Assets/Scenes/ShopScene3.unity
+    guid: 17dc9e2762b61a74797ccc61012f091d
+  - enabled: 1
+    path: Assets/Scenes/Level4.unity
+    guid: 3c8060fdbb2c9894e88336c45f6e545f
+  - enabled: 1
+    path: Assets/Scenes/ShopScene4.unity
+    guid: 91f9113d11fc38f4fbf3165e11e4bd5d
+  - enabled: 1
+    path: Assets/Scenes/Level5Cinematic.unity
+    guid: af841dfecb91bca48b469ade32793847
+  - enabled: 1
+    path: Assets/Scenes/Level5.unity
+    guid: 4461cb5eb44dddd4ca1e9a92f9793177
+  - enabled: 1
+    path: Assets/Scenes/FinalCutscene.unity
+    guid: dd12305d03f87154eb57502973bc32ae
+  - enabled: 1
+    path: Assets/Scenes/Credits.unity
+    guid: 162309f794a723549a57bb2dfe21e4b8
+  - enabled: 1
     path: Assets/Scenes/Test_Scene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:

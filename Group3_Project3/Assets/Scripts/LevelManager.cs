@@ -7,6 +7,8 @@ public class LevelManager : MonoBehaviour
 {
     [Header("Level Settings")]
     public float levelTime = 60f;
+    public bool bossFightScene = false;
+
     public AsteroidSpawner asteroidSpawner;
     public PowerUpSpawner powerUpSpawner;
     public ScrapSpawner scrapSpawner;
@@ -17,8 +19,9 @@ public class LevelManager : MonoBehaviour
     public Slider travelSlider;
 
     [Header("Scene Flow")]
-    public string nextSceneName = "Shop";
-    public string startLevelText = "Level One";
+    public string nextSceneName = "ShopAfterLevel2";
+    public string finalCutsceneSceneName = "FinalCutscene";
+    public string startLevelText = "Level Two";
     public string endLevelText = "Destination Reached";
 
     [Header("UI")]
@@ -40,9 +43,17 @@ public class LevelManager : MonoBehaviour
 
         if (travelSlider != null)
         {
-            travelSlider.minValue = 0f;
-            travelSlider.maxValue = 1f;
-            travelSlider.value = 0f;
+            if (bossFightScene)
+            {
+                travelSlider.gameObject.SetActive(false);
+            }
+            else
+            {
+                travelSlider.gameObject.SetActive(true);
+                travelSlider.minValue = 0f;
+                travelSlider.maxValue = 1f;
+                travelSlider.value = 0f;
+            }
         }
 
         if (gameOverPanel != null)
@@ -67,6 +78,9 @@ public class LevelManager : MonoBehaviour
     {
         if (levelEnded) return;
 
+        // Boss fight scene ignores timer-based win
+        if (bossFightScene) return;
+
         timer += Time.deltaTime * travelSpeedMultiplier;
 
         if (travelSlider != null)
@@ -82,6 +96,8 @@ public class LevelManager : MonoBehaviour
 
     void WinLevel()
     {
+        if (levelEnded) return;
+
         levelEnded = true;
         timer = levelTime;
 
@@ -91,11 +107,19 @@ public class LevelManager : MonoBehaviour
         }
 
         StopGameplay();
-
-        StartCoroutine(WinSequence());
+        StartCoroutine(WinSequence(nextSceneName));
     }
 
-    IEnumerator WinSequence()
+    public void BossDefeated()
+    {
+        if (levelEnded) return;
+
+        levelEnded = true;
+        StopGameplay();
+        StartCoroutine(WinSequence(finalCutsceneSceneName));
+    }
+
+    IEnumerator WinSequence(string sceneToLoad)
     {
         if (levelTextUI != null)
         {
@@ -106,11 +130,11 @@ public class LevelManager : MonoBehaviour
 
         if (FadeManager.instance != null)
         {
-            FadeManager.instance.LoadSceneWithFade(nextSceneName);
+            FadeManager.instance.LoadSceneWithFade(sceneToLoad);
         }
         else
         {
-            SceneManager.LoadScene(nextSceneName);
+            SceneManager.LoadScene(sceneToLoad);
         }
     }
 
