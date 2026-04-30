@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class BossController : MonoBehaviour
@@ -6,6 +7,9 @@ public class BossController : MonoBehaviour
     [Header("Boss Stats")]
     public int maxHealth = 60;
     public int scoreValue = 1000;
+
+    [Header("Boss UI")]
+    public Slider bossHealthSlider;
 
     [Header("Shield Phase")]
     public bool shieldActive = true;
@@ -79,6 +83,13 @@ public class BossController : MonoBehaviour
     void Start()
     {
         currentHealth = maxHealth;
+
+        if (bossHealthSlider != null)
+        {
+            bossHealthSlider.gameObject.SetActive(true);
+            bossHealthSlider.maxValue = maxHealth;
+            bossHealthSlider.value = maxHealth;
+        }
 
         if (shieldGlowObject != null)
             shieldGlowObject.SetActive(shieldActive);
@@ -199,8 +210,6 @@ public class BossController : MonoBehaviour
     {
         isLaserSequenceRunning = true;
 
-        // 0 = single lane, 1 = double lane.
-        // No all-3 pattern, so the player always has a safe lane.
         int pattern = Random.Range(0, 2);
 
         if (pattern == 0)
@@ -409,6 +418,13 @@ public class BossController : MonoBehaviour
         if (shieldActive) return;
 
         currentHealth -= damageAmount;
+        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+
+        if (bossHealthSlider != null)
+        {
+            bossHealthSlider.value = currentHealth;
+        }
+
         hitPauseTimer = hitPauseDuration;
 
         if (AudioManager.instance != null && bossHitSFX != null)
@@ -484,6 +500,11 @@ public class BossController : MonoBehaviour
         if (shieldGlowObject != null)
         {
             shieldGlowObject.SetActive(false);
+        }
+
+        if (bossHealthSlider != null)
+        {
+            bossHealthSlider.gameObject.SetActive(false);
         }
 
         if (GameDataManager.instance != null)

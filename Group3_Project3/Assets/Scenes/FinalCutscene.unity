@@ -1886,7 +1886,7 @@ PlayableDirector:
   serializedVersion: 3
   m_PlayableAsset: {fileID: 11400000, guid: ab76779d1decad34e8cd98b780b4de73, type: 2}
   m_InitialState: 1
-  m_WrapMode: 2
+  m_WrapMode: 0
   m_DirectorUpdateMode: 1
   m_InitialTime: 0
   m_SceneBindings:
@@ -2749,7 +2749,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CinematicSceneController
   director: {fileID: 859273755}
   nextSceneName: Credits
-  extraWaitTime: 0.5
+  extraWaitTime: 0
 --- !u!4 &1799812737
 Transform:
   m_ObjectHideFlags: 0
