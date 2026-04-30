@@ -67,8 +67,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb0dc7820a7c26944a36e684fb589a2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Enemy
-  health: 3
+  health: 5
   scoreValue: 50
+  laserHealth: 3
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  fullLaserDamageColor: {r: 1, g: 0, b: 0, a: 1}
   enemyBulletPrefab: {fileID: 5384868775602703817, guid: 14a177702f2f1284f8e655e1b23998bb, type: 3}
   firePoint: {fileID: 194100926857435206}
   fireRate: 3

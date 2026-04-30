@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using TMPro;
 using System.Collections;
 
@@ -8,6 +9,16 @@ public class ShopManager : MonoBehaviour
     [Header("UI")]
     public TMP_Text scoreText;
     public TMP_Text infoText;
+
+    [Header("Buttons")]
+    public Button maxLivesButton;
+    public Button shieldButton;
+    public Button speedButton;
+    public Button spreadButton;
+
+    [Header("Button Colors")]
+    public Color availableColor = Color.white;
+    public Color unavailableColor = Color.red;
 
     [Header("Costs")]
     public int maxLivesCost = 100;
@@ -24,17 +35,43 @@ public class ShopManager : MonoBehaviour
         {
             infoText.text = "";
         }
+
+        UpdateShopUI();
     }
 
     void Update()
     {
-        if (scoreText != null && GameDataManager.instance != null)
+        UpdateShopUI();
+    }
+
+    void UpdateShopUI()
+    {
+        if (GameDataManager.instance == null) return;
+
+        if (scoreText != null)
         {
             scoreText.text = "Score: " + GameDataManager.instance.score;
         }
+
+        UpdateButtonVisual(maxLivesButton, GameDataManager.instance.CanBuyMaxLives());
+        UpdateButtonVisual(shieldButton, !GameDataManager.instance.hasShieldUpgrade);
+        UpdateButtonVisual(speedButton, !GameDataManager.instance.hasSpeedUpgrade);
+        UpdateButtonVisual(spreadButton, !GameDataManager.instance.hasSpreadUpgrade);
     }
 
-    // ---------- PURCHASE METHODS ----------
+    void UpdateButtonVisual(Button button, bool canBuy)
+    {
+        if (button == null) return;
+
+        Image buttonImage = button.GetComponent<Image>();
+
+        if (buttonImage != null)
+        {
+            buttonImage.color = canBuy ? availableColor : unavailableColor;
+        }
+
+        button.interactable = canBuy;
+    }
 
     public void BuyMaxLivesUpgrade()
     {
@@ -55,6 +92,8 @@ public class ShopManager : MonoBehaviour
         {
             ShowInfo("Not enough score");
         }
+
+        UpdateShopUI();
     }
 
     public void BuyShieldUpgrade()
@@ -76,6 +115,8 @@ public class ShopManager : MonoBehaviour
         {
             ShowInfo("Not enough score");
         }
+
+        UpdateShopUI();
     }
 
     public void BuySpeedUpgrade()
@@ -97,6 +138,8 @@ public class ShopManager : MonoBehaviour
         {
             ShowInfo("Not enough score");
         }
+
+        UpdateShopUI();
     }
 
     public void BuySpreadUpgrade()
@@ -105,22 +148,22 @@ public class ShopManager : MonoBehaviour
 
         if (GameDataManager.instance.hasSpreadUpgrade)
         {
-            ShowInfo("Spread already purchased");
+            ShowInfo("Triple shot already purchased");
             return;
         }
 
         if (GameDataManager.instance.SpendScore(spreadCost))
         {
             GameDataManager.instance.hasSpreadUpgrade = true;
-            ShowInfo("Spread shot unlocked!");
+            ShowInfo("Triple shot unlocked!");
         }
         else
         {
             ShowInfo("Not enough score");
         }
-    }
 
-    // ---------- SCENE TRANSITIONS ----------
+        UpdateShopUI();
+    }
 
     public void ContinueToNextLevel()
     {
@@ -145,8 +188,6 @@ public class ShopManager : MonoBehaviour
             SceneManager.LoadScene("MainMenu");
         }
     }
-
-    // ---------- INFO TEXT ----------
 
     void ShowInfo(string message)
     {

@@ -16,10 +16,9 @@ public class PlayerController : MonoBehaviour
     public float fireRate = 0.15f;
     public float bulletSpawnOffset = 1f;
 
-    [Header("Spread Shot")]
-    public bool hasSpreadShot = false;
-    public int spreadBulletCount = 3;
-    public float spreadAngle = 20f;
+    [Header("Triple Shot Upgrade")]
+    public bool hasTripleShot = false;
+    public Transform[] tripleFirePoints;
 
     [Header("Laser")]
     public GameObject laserBeam;
@@ -64,8 +63,8 @@ public class PlayerController : MonoBehaviour
             lives = GameDataManager.instance.GetMaxLives();
             shieldHits = GameDataManager.instance.GetShieldHits();
 
-            hasSpreadShot = GameDataManager.instance.hasSpreadUpgrade;
-            spreadBulletCount = GameDataManager.instance.GetSpreadBulletCount();
+            // This still uses your old spread upgrade bool, but treats it as triple shot now.
+            hasTripleShot = GameDataManager.instance.hasSpreadUpgrade;
         }
 
         UpdateLivesUI();
@@ -116,9 +115,9 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetButton("Fire1") && fireTimer <= 0f)
         {
-            if (hasSpreadShot)
+            if (hasTripleShot)
             {
-                FireSpreadShot();
+                FireTripleShot();
             }
             else
             {
@@ -142,21 +141,22 @@ public class PlayerController : MonoBehaviour
         Instantiate(bulletPrefab, spawnPosition, firePoint.rotation);
     }
 
-    void FireSpreadShot()
+    void FireTripleShot()
     {
-        if (bulletPrefab == null || firePoint == null) return;
+        if (bulletPrefab == null) return;
 
-        int bulletCount = Mathf.Max(3, spreadBulletCount);
-        float startAngle = -spreadAngle * 0.5f;
-        float angleStep = spreadAngle / (bulletCount - 1);
-
-        for (int i = 0; i < bulletCount; i++)
+        if (tripleFirePoints == null || tripleFirePoints.Length == 0)
         {
-            float currentAngle = startAngle + (angleStep * i);
-            Quaternion bulletRotation = firePoint.rotation * Quaternion.Euler(0f, currentAngle, 0f);
-            Vector3 spawnPosition = firePoint.position + bulletRotation * Vector3.forward * bulletSpawnOffset;
+            FireSingleShot();
+            return;
+        }
 
-            Instantiate(bulletPrefab, spawnPosition, bulletRotation);
+        for (int i = 0; i < tripleFirePoints.Length; i++)
+        {
+            if (tripleFirePoints[i] == null) continue;
+
+            Vector3 spawnPosition = tripleFirePoints[i].position + tripleFirePoints[i].forward * bulletSpawnOffset;
+            Instantiate(bulletPrefab, spawnPosition, tripleFirePoints[i].rotation);
         }
     }
 

@@ -6,8 +6,27 @@ public class Bullet : MonoBehaviour
     public float lifeTime = 3f;
     public int damage = 1;
 
+    private Collider bulletCollider;
+
     void Start()
     {
+        bulletCollider = GetComponent<Collider>();
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null && bulletCollider != null)
+        {
+            Collider[] playerColliders = player.GetComponentsInChildren<Collider>();
+
+            for (int i = 0; i < playerColliders.Length; i++)
+            {
+                if (playerColliders[i] != null)
+                {
+                    Physics.IgnoreCollision(bulletCollider, playerColliders[i], true);
+                }
+            }
+        }
+
         Destroy(gameObject, lifeTime);
     }
 
@@ -29,7 +48,6 @@ public class Bullet : MonoBehaviour
 
             if (enemy != null)
             {
-                Debug.Log("Bullet hit Enemy: " + other.name);
                 enemy.TakeDamage(damage);
             }
 
@@ -48,12 +66,7 @@ public class Bullet : MonoBehaviour
 
             if (boss != null)
             {
-                Debug.Log("Bullet hit Boss: " + other.name);
                 boss.TakeDamage(damage);
-            }
-            else
-            {
-                Debug.Log("Hit object tagged Boss, but no BossController found: " + other.name);
             }
 
             Destroy(gameObject);

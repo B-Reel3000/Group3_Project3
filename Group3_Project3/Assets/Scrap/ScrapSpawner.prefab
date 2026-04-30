@@ -46,5 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ScrapSpawner
   scrapPrefab: {fileID: 5813732426014023814, guid: cf7d989d9dbb75b4e9f46b9f5050ea4e, type: 3}
   spawnRate: 10
-  xSpawnRange: 8
+  xSpawnRange: 45
   zSpawnOffset: 40

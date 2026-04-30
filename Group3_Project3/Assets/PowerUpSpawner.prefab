@@ -46,5 +46,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PowerUpSpawner
   laserPowerUpPrefab: {fileID: 0}
   spawnRate: 12
-  xSpawnRange: 8
+  xSpawnRange: 45
   zSpawnOffset: 30

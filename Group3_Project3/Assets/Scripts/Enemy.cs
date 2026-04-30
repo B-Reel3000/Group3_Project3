@@ -6,6 +6,11 @@ public class Enemy : MonoBehaviour
     public int health = 3;
     public int scoreValue = 50;
 
+    [Header("Laser Damage")]
+    public float laserHealth = 3f;
+    public Color normalColor = Color.white;
+    public Color fullLaserDamageColor = Color.red;
+
     [Header("Shooting")]
     public GameObject enemyBulletPrefab;
     public Transform firePoint;
@@ -23,6 +28,26 @@ public class Enemy : MonoBehaviour
     private Vector3 targetPosition;
     private Vector3 combatStartPosition;
     private bool hasReachedPosition = false;
+
+    private float currentLaserHealth;
+    private Renderer[] renderers;
+    private Color[] originalColors;
+
+    void Start()
+    {
+        currentLaserHealth = laserHealth;
+
+        renderers = GetComponentsInChildren<Renderer>();
+        originalColors = new Color[renderers.Length];
+
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            if (renderers[i] != null)
+            {
+                originalColors[i] = GetRendererColor(renderers[i]);
+            }
+        }
+    }
 
     public void SetTargetPosition(Vector3 newTargetPosition)
     {
@@ -92,18 +117,49 @@ public class Enemy : MonoBehaviour
     public void TakeDamage(int damageAmount)
     {
         health -= damageAmount;
-        Debug.Log(gameObject.name + " took damage. Health now: " + health);
 
         if (health <= 0)
         {
-            if (GameDataManager.instance != null)
-            {
-                GameDataManager.instance.AddScore(scoreValue);
-            }
-
-            Explode();
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    public void TakeLaserDamage(float damageAmount)
+    {
+        currentLaserHealth -= damageAmount;
+
+        float damagePercent = 1f - (currentLaserHealth / laserHealth);
+        damagePercent = Mathf.Clamp01(damagePercent);
+
+        UpdateLaserDamageColor(damagePercent);
+
+        if (currentLaserHealth <= 0f)
+        {
+            Die();
+        }
+    }
+
+    void UpdateLaserDamageColor(float damagePercent)
+    {
+        for (int i = 0; i < renderers.Length; i++)
+        {
+            if (renderers[i] != null)
+            {
+                Color newColor = Color.Lerp(originalColors[i], fullLaserDamageColor, damagePercent);
+                SetRendererColor(renderers[i], newColor);
+            }
+        }
+    }
+
+    void Die()
+    {
+        if (GameDataManager.instance != null)
+        {
+            GameDataManager.instance.AddScore(scoreValue);
+        }
+
+        Explode();
+        Destroy(gameObject);
     }
 
     void Explode()
@@ -116,6 +172,33 @@ public class Enemy : MonoBehaviour
         if (AudioManager.instance != null)
         {
             AudioManager.instance.PlaySFX(AudioManager.instance.explosionSFX);
+        }
+    }
+
+    Color GetRendererColor(Renderer rend)
+    {
+        if (rend.material.HasProperty("_BaseColor"))
+        {
+            return rend.material.GetColor("_BaseColor");
+        }
+
+        if (rend.material.HasProperty("_Color"))
+        {
+            return rend.material.color;
+        }
+
+        return Color.white;
+    }
+
+    void SetRendererColor(Renderer rend, Color color)
+    {
+        if (rend.material.HasProperty("_BaseColor"))
+        {
+            rend.material.SetColor("_BaseColor", color);
+        }
+        else if (rend.material.HasProperty("_Color"))
+        {
+            rend.material.color = color;
         }
     }
 }

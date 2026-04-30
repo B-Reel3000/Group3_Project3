@@ -174412,6 +174412,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ShopManager
   scoreText: {fileID: 1746050368}
   infoText: {fileID: 932254976}
+  maxLivesButton: {fileID: 856261579}
+  shieldButton: {fileID: 1338758630}
+  speedButton: {fileID: 1361021044}
+  spreadButton: {fileID: 1827838481}
+  availableColor: {r: 1, g: 1, b: 1, a: 1}
+  unavailableColor: {r: 1, g: 0, b: 0, a: 1}
   maxLivesCost: 150
   shieldCost: 350
   speedCost: 125
